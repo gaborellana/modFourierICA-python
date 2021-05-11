@@ -17,8 +17,8 @@ def signalGen(t, fdom, wid, ph=None, coh=None):
     w = 2*np.pi*fdom*step
     w1 = 2*np.pi*wid*step
     ## probs change of state
-    prob01 = 0.001#step/5 *10
-    prob10 = 0.1#1/fdom
+    prob01 = step/5 *10
+    prob10 = 1./fdom
     state = 0
     rnd3 = 0
     Rnd3 = []

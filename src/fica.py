@@ -11,13 +11,13 @@ class fourierICA():
         self.showprogress = True
         self.seed = -1
         self.lambd = 1
-        self.conveps = 1e-7
+        self.conveps = 3e-8
         self.complexmixing = 0
         self.winlen_sec = 1
         self.overlapfactor = 8
         self.components = eeggen.Nchs #64
         self.removeoutliers = 1
-        self.maxiter = np.max(np.array([40*pcadim, 2000]))
+        self.maxiter = np.max(np.array([40*pcadim, 4000]))
         #self.fcnoutliers = []
         self.zerotolerance = self.conveps
         self.hammingdata = True

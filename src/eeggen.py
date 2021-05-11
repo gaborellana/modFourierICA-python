@@ -5,8 +5,8 @@ import glob
 class EEGGenerator():
     def __init__(self):
         self.path = 'files/'
-        self.Nsrcs = 1509
-        self.Nchs = 64
+        self.Nsrcs = 498
+        self.Nchs = 60
         self.Nsims = 4
         self.minfreq=0.25
         self.maxfreq=20
@@ -19,17 +19,18 @@ class EEGGenerator():
         self.frec = np.arange(0.1, 64, 0.005)
         self.ff = np.arange(self.minfreq, self.maxfreq+0.1, 0.25)
         self.fdom = [3,7,12]
-        self.phs = [[0], [0], [0, np.pi/2]]
+        self.phs = [[0], [0], [0, np.pi/3]]
         self.wid=1.
-        self.coh=0.75
-        self.ampl=50
+        self.coh=0.5
+        self.ampl=20
         self.alpha = 0.75
         self.Sg = None
         self.loadSigs=False
         self.loadMixNoiseMat=False
         self.loadNoise=True
         self.loadMix=True
-        self.SgSrcs = [500, 250, 1000, 750]
+        self.saveNoiseMix=False
+        self.SgSrcs = [0, 138, 141+246, 248+246]
         
     def calculate(self):
         if self.loadSigs:
@@ -47,7 +48,7 @@ class EEGGenerator():
         for i,src in enumerate(self.SgSrcs):
             self.NoiseMix[src,:]= self.NoiseMix[src,:]+self.Sg[i,:]*1.
         if self.loadMix:
-            self.mixing = np.load(self.path + 'Mix.npy')
+            self.mixing = np.load(self.path + 'leadfield.npy')
         else:
             self._mixGen()
         
@@ -106,14 +107,17 @@ class EEGGenerator():
                 MixMatOld=MixMatOld+step
                 Y = self.noise[:,j]
                 self.NoiseMix[:,j] = normMatFun(MixMatOld).T @ Y
-        with open(self.path + 'NoiseMix.npy', 'wb') as f:
-            np.save(f, self.NoiseMix)
+        if self.saveNoiseMix:
+            with open(self.path + 'NoiseMix.npy', 'wb') as f:
+                np.save(f, self.NoiseMix)
         
     def _mixGen(self):
         while 1:
-            self.mixing = np.random.rand(self.Nchs,self.Nsrcs)*2-1
-            for r in range(Nchs):
+            self.mixing = np.ones((self.Nchs,self.Nsrcs))*0.2 + np.random.rand(self.Nchs,self.Nsrcs)*2-1
+            for r in range(self.Nchs):
                 self.mixing[r,:] = self.mixing[r,:]/np.sum(np.abs(self.mixing[r,:]))
             if np.max(np.abs(self.mixing))<1:
                 break
+        with open(self.path + 'Mix.npy', 'wb') as f:
+            np.save(f, self.mixing)
 
